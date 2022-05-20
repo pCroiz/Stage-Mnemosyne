@@ -447,6 +447,4 @@ def anim_out(xyz):
     plt.show()
     
 
-    
-
 
