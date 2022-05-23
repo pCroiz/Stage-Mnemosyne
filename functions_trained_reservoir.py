@@ -465,10 +465,12 @@ def eigein_value(W1,W2 = [],*args):
     fig.show()
     
 
-def a(*args):
-    print(args)
-    for i in args:
-        print(i)
+#calcul une moyenne
+def moyenne(liste):
+    total = 0
+    for i in liste:
+        total += i
+    return total/len(liste)
 
 
 
