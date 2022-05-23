@@ -6,6 +6,7 @@ Created on Tue May  3 17:35:28 2022
 """
 
 import numpy as np
+from numpy.linalg import eig
 
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -17,6 +18,8 @@ from scipy import sparse, signal
 from reservoirpy.mat_gen import normal
 
 from random import gauss
+
+from tqdm import tqdm
 
 #Extraction des données d'arrivée
 def extract_target():
@@ -47,13 +50,16 @@ def coord_target(n):
 #indS : indice du Sujet (de 1 à 5)
 #indU : indide de l'entrée (de 1 à 10)
 #indD : indide du chiffre (de 0 à 9)
-def cocleogram(S,U,D,data):
+def cocleogram(S,U,D,data,amplitude = False,ampl_ent = 5):
     
     subject = 'subject_'+str(int(S))
     utterance = 'utterance_'+str(int(U))
     digit = 'digit_'+str(int(D))
     
-    return data[subject][utterance][digit]
+    if amplitude == False :
+        return data[subject][utterance][digit]
+    else:
+        return ampl_ent*data[subject][utterance][digit]
 
 
 #Fonction qui affiche les chiffres d'arrivée 
@@ -414,8 +420,59 @@ def linear_warping(indS,indU,indD,data,innate_trajectory,sujet=[1]):
     return warping_innate_trajectory
     
     
+#graphe de toutes les valeurs propres    
+def eigein_value(W1,W2 = [],*args):
     
+    if args == ():
+        args += ("W1","W2")
     
+    #récupération des valeurs propres
+    eigeinvalue_W1, _ = eig(W1)
+    
+    #Récupération du rayon spectrale
+    rs_W1 = np.max(np.abs(eigeinvalue_W1))
+    
+    #Affichage:
+    fig,ax_eigeinvalue = plt.subplots()
+    fig.suptitle("Affichage des valeurs propres")
+
+    
+    #Affichage du cocleogram
+    X1,Y1 = [],[]
+    for i in range(len(eigeinvalue_W1)):
+        X1.append(eigeinvalue_W1[i].real)
+        Y1.append(eigeinvalue_W1[i].imag)
+                
+        
+    ax_eigeinvalue.scatter(X1,Y1,c = 'r',label=args[0] + " et rs = " +str(rs_W1))
+    
+    if W2 != []:
+        eigeinvalue_W2, _ = eig(W2)
+        rs_W2 = np.max(np.abs(eigeinvalue_W2))
+        X2,Y2 = [],[]
+        for i in range(len(eigeinvalue_W2)):
+        
+            X2.append(eigeinvalue_W2[i].real)
+            Y2.append(eigeinvalue_W2[i].imag)
+
+        ax_eigeinvalue.scatter(X2,Y2,c = 'k',label=args[1] + " et rs = " +str(rs_W2))
+    
+    ax_eigeinvalue.set_xlabel("Partie réelle")
+    ax_eigeinvalue.set_ylabel("Partie imaginaire")
+    ax_eigeinvalue.grid()
+    ax_eigeinvalue.legend()
+    
+    fig.show()
+    
+
+def a(*args):
+    print(args)
+    for i in args:
+        print(i)
+
+
+
+
 
 #Fonction qui anime la sortie. en cours 
 def anim_out(xyz): 
