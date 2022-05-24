@@ -21,6 +21,7 @@ from random import gauss
 
 from tqdm import tqdm
 
+
 #Extraction des données d'arrivée
 def extract_target():
     target_dict = mat73.loadmat('donnees/target.mat')
@@ -50,7 +51,7 @@ def coord_target(n):
 #indS : indice du Sujet (de 1 à 5)
 #indU : indide de l'entrée (de 1 à 10)
 #indD : indide du chiffre (de 0 à 9)
-def cocleogram(S,U,D,data,amplitude = False,ampl_ent = 5):
+def cocleogram(S,U,D,data,amplitude = True,ampl_ent = 5):
     
     subject = 'subject_'+str(int(S))
     utterance = 'utterance_'+str(int(U))
@@ -75,7 +76,8 @@ def affiche_chiffre(n):
 #Fonction qui affiche un cocleogram 
 def affiche_cocleo(indS,indU,indD,data,formatage = True):
     
-    fig_cocleo,ax_cocleo = plt.subplots() 
+    fig_cocleo,ax_cocleo = plt.subplots(figsize =(10,10)) 
+    
     freq = 6*10**3
     T = 1/freq
     
@@ -88,13 +90,14 @@ def affiche_cocleo(indS,indU,indD,data,formatage = True):
     ax_cocleo.set_xlabel("Timestep")
     ax_cocleo.set_ylabel("Bande de fréquence")
     
-    
-    ax_cocleo.pcolormesh(cocleo,cmap="jet")
+    im = ax_cocleo.pcolormesh(cocleo, cmap="jet",)
+    fig_cocleo.colorbar(im, ax=ax_cocleo)
+
     
     fig_cocleo.show()
     
 #formatage des entrées pour faire comme dans l'article
-def formatage_cocleogram(indS,indU,indD,data,ampl_ent = 5,T_ent =1/(6*10**3), T_out = 1/(10**3) ):
+def formatage_cocleogram(indS,indU,indD,data,T_ent =1/(6*10**3), T_out = 1/(10**3) ):
     
     #Chaque test et entrainement commence 100ms avant la sensor epoch
     #bef_sensor = int(100e-3 /T_ent)
@@ -112,7 +115,7 @@ def formatage_cocleogram(indS,indU,indD,data,ampl_ent = 5,T_ent =1/(6*10**3), T_
     #Ensuite, en fonction du chiffre qu'on cherche à afficher on rajoute une durée
     #Qui correspond au temps que met le reservoir à tracer le chiffre
     y = len(coord_target(indD))
-    return ampl_ent * np.concatenate((cocleo,np.zeros([12,int(y)])),axis=1)
+    return np.concatenate((cocleo,np.zeros([12,int(y)])),axis=1)
 
 
 #création de la donnée de sortie z (une fonction en escalier) et formatage de x et y
@@ -139,7 +142,8 @@ def target_xyz(indS,indU,indD,data,T_ent =1/(6*10**3), T_out = 1/(10**3)):
     
     return np.concatenate((x,y,z), axis = 1)
 
-
+def duree_transition_motor(indD, T_out = 1/(10**3)):
+    return int(len(coord_target(indD)) + (300e-3)/T_out )
     
 def out(xyz,indS,indU,indD):
     
