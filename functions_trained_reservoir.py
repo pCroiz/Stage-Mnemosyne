@@ -128,20 +128,17 @@ def target_xyz(indS,indU,indD,data,T_ent =1/(6*10**3), T_out = 1/(10**3)):
     #Récupération du cocleogram
     cocleo = cocleogram(indS, indU, indD,data)
     
-    bef_sensor = 100e-3 /T_ent
     duree_sensor_epoch = len(cocleo[0])
     duree_transition = 300*10**(-3)
     step_motor_epoch = len(coord_target(indD))  
     
-    before_sensor_epoch= np.zeros([int(bef_sensor),1])
-    
     sensor_transition_epoch = np.zeros([int(duree_sensor_epoch + (duree_transition)/T_out),1])
     
-    z = np.concatenate((before_sensor_epoch,sensor_transition_epoch,np.ones([step_motor_epoch,1])),axis = 0)
+    z = np.concatenate((sensor_transition_epoch,np.ones([step_motor_epoch,1])),axis = 0)
     
-    x = np.concatenate((before_sensor_epoch,sensor_transition_epoch,coord_target(indD)[:,[0]]))
+    x = np.concatenate((sensor_transition_epoch,coord_target(indD)[:,[0]]))
     
-    y = np.concatenate((before_sensor_epoch,sensor_transition_epoch,coord_target(indD)[:,[1]]))
+    y = np.concatenate((sensor_transition_epoch,coord_target(indD)[:,[1]]))
     
     return np.concatenate((x,y,z), axis = 1)
 
@@ -516,35 +513,53 @@ def anim_out(xyz):
     ani = animation.FuncAnimation(fig, animate, frames=100, blit=True, interval=20, repeat=False)
     
     plt.show()
-    
+
+
+
+
+
+
+
+
+
+"""
 #permet de générer une figure du rapport de stage;
 def fig(data):
     
     indS,indU,indD = 1,1,9
     end_sensor_epoch = len(cocleogram(indS,indU,indD,data)[0])
-    
-    fig = plt.figure(figsize = (14,5))
+    cocleo = formatage_cocleogram(indS, indU, indD,data)
+    end = len(formatage_cocleogram(indS, indU, indD,data)[0])
+
+    fig = plt.figure(figsize = (14,7))
     fig.suptitle("Données d'entrées")
     gs = fig.add_gridspec(1,2)
 
 
     ax_cocleo = fig.add_subplot(gs[0,0])
-    cocleo = formatage_cocleogram(indS, indU, indD,data)
-    ax_cocleo.pcolormesh(cocleo,cmap="jet")
     ax_cocleo.set_title("Cocleogram du sujet : {}, entrée : {},chiffre : {}".format(indS,indU,indD))
     ax_cocleo.set_xlabel("Timestep")
     ax_cocleo.set_ylabel("Bande de fréquence")
+    im = ax_cocleo.pcolormesh(cocleo, cmap="jet",)
+    fig.colorbar(im, ax=ax_cocleo)
     
-    
-    limit = 3
     ax_out = fig.add_subplot(gs[0,1])
     target = target_xyz(indS, indU, indD, data)
-    ax_out.plot(target[:,0],"k",label="Coordonées de x")
+    ax_out.plot(target[:,0],"g",label="Coordonées de x")
     ax_out.plot(target[:,1],"r",label="Coordonées de y")
-    ax_out.plot(target[:,2],"b",label="Coordonées de z")
+    ax_out.plot(target[:,2],"--b",label="Coordonées de z")
+    
+    ax_out.plot([0,end_sensor_epoch],[-0.5,-0.5],"k")
+    ax_out.text(-10,-0.6,"époque sensorielle")
+    
+    ax_out.plot([end_sensor_epoch,end_sensor_epoch + 300],[-0.7,-0.7],"k")
+    ax_out.text(end_sensor_epoch,-0.8,"transition")
+    
+    ax_out.plot([end_sensor_epoch + 300,end],[-0.8,-0.8],"k")
+    ax_out.text(end_sensor_epoch + 550,-0.9,"époque motrice")
+
    
-    ax_out.set_xlim(-limit, limit)
-    ax_out.set_ylim(-limit, limit)
     ax_out.legend()
     ax_out.set_title("Variation des différentes coordonées")
     ax_out.set_xlabel("Timesteps")
+"""
