@@ -64,11 +64,14 @@ def cocleogram(S,U,D,data,amplitude = True,ampl_ent = 5):
 
 
 #Fonction qui affiche les chiffres d'arrivée 
-def affiche_chiffre(n): 
+def affiche_one_chiffre(n): 
     transcription = extract_target()
-    limit = max(np.max(transcription[n]),abs(np.min(transcription[n])))
+    limit = max(np.max(transcription[n]),abs(np.min(transcription[n]))) + 0.1
     fig, ax = plt.subplots()
-    ax.plot(coord_target(n)[0],coord_target(n)[1])
+    ax.plot(coord_target(n)[:,0],coord_target(n)[:,1])
+    ax.set_xlabel("Coordonée x")
+    ax.set_ylabel("Coordonée y")
+    ax.set_title("Tracé du chiffre 9")
     plt.xlim(-limit,limit)
     plt.ylim(-limit,limit)
 
@@ -86,9 +89,9 @@ def affiche_cocleo(indS,indU,indD,data,formatage = True):
     else :
         cocleo = cocleogram(indS,indU,indD,data)
    
-    ax_cocleo.set_title("Cocleogram du sujet : {}, entrée : {},chiffre : {} et formaté :{}".format(indS,indU,indD,formatage))
+    ax_cocleo.set_title("Cocléogramme du sujet : {}, entrée : {},chiffre : {}".format(indS,indU,indD))
     ax_cocleo.set_xlabel("Timestep")
-    ax_cocleo.set_ylabel("Bande de fréquence")
+    ax_cocleo.set_ylabel("Bande de fréquence en Hz")
     
     im = ax_cocleo.pcolormesh(cocleo, cmap="jet",)
     fig_cocleo.colorbar(im, ax=ax_cocleo)
@@ -172,7 +175,7 @@ def out(xyz,indS,indU,indD):
     
 
 #Affiche le cocleogram d'entrée, et la sortie
-def affiche(xyz,indS,indU,indD,data,states = np.zeros(10),error = np.zeros(10),mode = None,**kwargs):
+def affiche(xyz,indS,indU,indD,data,states = [],erreur = [],mode = None,**kwargs):
     
     
     end_sensor_epoch = len(cocleogram(indS,indU,indD,data)[0])
@@ -216,23 +219,28 @@ def affiche(xyz,indS,indU,indD,data,states = np.zeros(10),error = np.zeros(10),m
     ax_out.set_ylabel("axe des y")
     
     #Affiche des états des neurones
-    ax_state = fig.add_subplot(gs[1,0:2])
-    ax_state.plot(states)
-    ax_state.plot([end_sensor_epoch,end_sensor_epoch],[-1,1],"--k")
-    ax_state.fill_betweenx([-1,1],[0],[end_sensor_epoch],color="0.95")
-    ax_state.text(int(end_sensor_epoch/2),-1,r"sensor epoch")
-    ax_state.set_title("Etats des neurones")
+    
+    if len(states) != 0:
+        ax_state = fig.add_subplot(gs[1,0:2])
+        ax_state.plot(states)
+        ax_state.plot([end_sensor_epoch,end_sensor_epoch],[-1,1],"--k")
+        ax_state.fill_betweenx([-1,1],[0],[end_sensor_epoch],color="0.95")
+        ax_state.text(int(end_sensor_epoch/2),-1,r"sensor epoch")
+        ax_state.set_title("Etats des neurones")
     
     #Affiche de l'erreur commise (simple distance euclidienne)
-    max_error = np.max(error)
-    ax_error = fig.add_subplot(gs[0,2])
-    ax_error.plot(error)
-    ax_error.plot([end_sensor_epoch,end_sensor_epoch],[0,max_error],"--k")
-    ax_error.fill_betweenx([0,max_error],[0],[end_sensor_epoch],color="0.95")
-    ax_error.text(0,0,r"sensor epoch")
-    ax_error.set_xlabel("Timesteps")
-    ax_error.set_ylabel("Distance euclidienne")
-    ax_error.set_title("Erreur commise")
+    
+    if len(erreur) != 0:
+        print(1)
+        max_error = np.max(erreur)
+        ax_error = fig.add_subplot(gs[0,2])
+        ax_error.plot(erreur)
+        ax_error.plot([end_sensor_epoch,end_sensor_epoch],[0,max_error],"--k")
+        ax_error.fill_betweenx([0,max_error],[0],[end_sensor_epoch],color="0.95")
+        ax_error.text(0,0,r"sensor epoch")
+        ax_error.set_xlabel("Timesteps")
+        ax_error.set_ylabel("Distance euclidienne")
+        ax_error.set_title("Erreur commise")
 
     #Affiche des données utilisées
     ax_donnees = fig.add_subplot(gs[1,2])
@@ -322,7 +330,7 @@ def error(xyz,indS,indU,indD,data):
     #On utilise la distance euclidienne
     target = target_xyz(indS, indU, indD, data)
     
-    taille = len(target)
+    taille = len(xyz)
     
     d_euclidienne = np.zeros((taille,1))
     
@@ -509,5 +517,34 @@ def anim_out(xyz):
     
     plt.show()
     
+#permet de générer une figure du rapport de stage;
+def fig(data):
+    
+    indS,indU,indD = 1,1,9
+    end_sensor_epoch = len(cocleogram(indS,indU,indD,data)[0])
+    
+    fig = plt.figure(figsize = (14,5))
+    fig.suptitle("Données d'entrées")
+    gs = fig.add_gridspec(1,2)
 
 
+    ax_cocleo = fig.add_subplot(gs[0,0])
+    cocleo = formatage_cocleogram(indS, indU, indD,data)
+    ax_cocleo.pcolormesh(cocleo,cmap="jet")
+    ax_cocleo.set_title("Cocleogram du sujet : {}, entrée : {},chiffre : {}".format(indS,indU,indD))
+    ax_cocleo.set_xlabel("Timestep")
+    ax_cocleo.set_ylabel("Bande de fréquence")
+    
+    
+    limit = 3
+    ax_out = fig.add_subplot(gs[0,1])
+    target = target_xyz(indS, indU, indD, data)
+    ax_out.plot(target[:,0],"k",label="Coordonées de x")
+    ax_out.plot(target[:,1],"r",label="Coordonées de y")
+    ax_out.plot(target[:,2],"b",label="Coordonées de z")
+   
+    ax_out.set_xlim(-limit, limit)
+    ax_out.set_ylim(-limit, limit)
+    ax_out.legend()
+    ax_out.set_title("Variation des différentes coordonées")
+    ax_out.set_xlabel("Timesteps")
