@@ -5,7 +5,7 @@ Created on Mon May 30 19:53:21 2022
 @author: smoot
 """
 
-import functions_data as d 
+import functions_data as d
 import functions_cocleogramme as c
 
 import matplotlib.pyplot as plt 

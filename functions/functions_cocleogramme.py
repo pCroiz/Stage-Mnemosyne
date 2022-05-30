@@ -17,12 +17,10 @@ from tqdm import tqdm
 
 from reservoirpy.nodes import Reservoir
 
-import functions_data as d
 
     
 #return une liste [x,y] avec les coordonées du chiffre n
-def coord_target(n):
-    transcription = d.extract_target()
+def coord_target(n,transcription):
     return np.concatenate((transcription[n][:,[0]],transcription[n][:,[1]]),axis = 1)
   
 #Fonction qui return la data d'entrée voulu
@@ -43,7 +41,7 @@ def cocleogram(S,U,D,data,amplitude = True,ampl_ent = 5):
   
 #formatage des entrées pour faire comme dans l'article
 #Devenu obsolète  
-def formatage_cocleogram(indS,indU,indD,data,T_ent =1/(6*10**3), T_out = 1/(10**3) ):
+def formatage_cocleogram(indS,indU,indD,data,transcription,T_ent =1/(6*10**3), T_out = 1/(10**3) ):
     
     #Chaque test et entrainement commence 100ms avant la sensor epoch
     #bef_sensor = int(100e-3 /T_ent)
@@ -60,13 +58,13 @@ def formatage_cocleogram(indS,indU,indD,data,T_ent =1/(6*10**3), T_out = 1/(10**
     
     #Ensuite, en fonction du chiffre qu'on cherche à afficher on rajoute une durée
     #Qui correspond au temps que met le reservoir à tracer le chiffre
-    y = len(coord_target(indD))
+    y = len(coord_target(indD,transcription))
     return np.concatenate((cocleo,np.zeros([12,int(y)])),axis=1)
 
 
 #création de la donnée de sortie z (une fonction en escalier) et formatage de x et y
 #Ici pas sur que le pas de temps d'arriver soit à T_out et pas à T_ent mais sinon la durée est la même entre l'entrée et à la sortie.
-def target_xyz(indS,indU,indD,data,innate = False,T_ent =1/(6*10**3), T_out = 1/(10**3)):
+def target_xyz(indS,indU,indD,data,transcription,innate = False,T_ent =1/(6*10**3), T_out = 1/(10**3)):
     
     #Récupération du cocleogram
     cocleo = cocleogram(indS, indU, indD,data)
@@ -80,7 +78,7 @@ def target_xyz(indS,indU,indD,data,innate = False,T_ent =1/(6*10**3), T_out = 1/
     
     duree_sensor_epoch = len(cocleo[0])
     duree_transition = 300*10**(-3)
-    step_motor_epoch = len(coord_target(indD))  
+    step_motor_epoch = len(coord_target(indD,transcription))  
     
     duree_total = duree_sensor_epoch + (duree_transition)/T_out + step_motor_epoch
     
@@ -93,9 +91,9 @@ def target_xyz(indS,indU,indD,data,innate = False,T_ent =1/(6*10**3), T_out = 1/
     
     z = np.concatenate((sensor_transition_epoch,np.ones([step_motor_epoch,1])),axis = 0)
     
-    x = np.concatenate((sensor_transition_epoch,coord_target(indD)[:,[0]]))
+    x = np.concatenate((sensor_transition_epoch,coord_target(indD,transcription)[:,[0]]))
     
-    y = np.concatenate((sensor_transition_epoch,coord_target(indD)[:,[1]]))
+    y = np.concatenate((sensor_transition_epoch,coord_target(indD,transcription)[:,[1]]))
     
     return np.concatenate((x,y,z), axis = 1)
 
@@ -165,7 +163,7 @@ def ind_max_entrance(indD,data,sujet=[1,2,3,4,5]):
     return S,U,D
 
 #Fonction qui retourne les cocléogrammes d'entrées
-def entrance_cocleogram(indS,indU,indD,data):
+def entrance_cocleogram(indS,indU,indD,data,transcription):
 
     #définition des périodes d'entrées et de sorties
     T_ent =1/(6*10**3)
@@ -191,7 +189,7 @@ def entrance_cocleogram(indS,indU,indD,data):
     
     #Ensuite, en fonction du chiffre qu'on cherche à afficher on rajoute une durée
     #Qui correspond au temps que met le reservoir à tracer le chiffre
-    y = len(coord_target(indD))
+    y = len(coord_target(indD,transcription))
     return np.concatenate((cocleo,np.zeros([12,int(y)])),axis=1)        
                 
                 
