@@ -5,6 +5,8 @@ Created on Mon May 30 19:53:21 2022
 @author: smoot
 """
 
+import sys 
+sys.path.append("C:\\Users\\smoot\\Desktop\\Stage Mnemosyne\\functions")
 import functions_data as d
 import functions_cocleogramme as c
 
@@ -19,7 +21,7 @@ def affiche_one_chiffre(n):
     transcription = d.extract_target()
     limit = max(np.max(transcription[n]),abs(np.min(transcription[n]))) + 0.1
     fig, ax = plt.subplots()
-    ax.plot(c.coord_target(n)[:,0],c.coord_target(n)[:,1])
+    ax.plot(c.coord_target(n,transcription)[:,0],c.coord_target(n,transcription)[:,1])
     ax.set_xlabel("Coordonée x")
     ax.set_ylabel("Coordonée y")
     ax.set_title("Tracé du chiffre 9")
@@ -29,7 +31,7 @@ def affiche_one_chiffre(n):
     
     
 #Fonction qui affiche un cocleogram 
-def affiche_cocleo(indS,indU,indD,data,formatage = True):
+def affiche_cocleo(indS,indU,indD,data,transcription,formatage = True):
     
     fig_cocleo,ax_cocleo = plt.subplots(figsize =(10,10)) 
     
@@ -37,7 +39,7 @@ def affiche_cocleo(indS,indU,indD,data,formatage = True):
     T = 1/freq
     
     if formatage == True:
-        cocleo = c.entrance_cocleogram(indS, indU, indD,data)      
+        cocleo = c.entrance_cocleogram(indS, indU, indD,data,transcription)      
     else :
         cocleo = c.cocleogram(indS,indU,indD,data)
    
@@ -53,12 +55,12 @@ def affiche_cocleo(indS,indU,indD,data,formatage = True):
     
     
 #Affiche la sortie XYZ et le chiffre target  
-def out(xyz,indS,indU,indD):
+def out(xyz,indS,indU,indD,transcription):
     
     fig,ax = plt.subplots()
     
     max1 = np.max(np.abs(xyz[:,[0,1]]))
-    max2 = np.max(np.abs(c.coord_target(indD)))
+    max2 = np.max(np.abs(c.coord_target(indD,transcription)))
     
     limit = max(max1,max2) + 0.1
     
@@ -67,7 +69,7 @@ def out(xyz,indS,indU,indD):
             ax.plot([xyz[i,0],xyz[i+1,0]],[xyz[i,1],xyz[i+1,1]],"k")
             
     
-    ax.plot(c.coord_target(indD)[:,[0]],c.coord_target(indD)[:,[1]],"r--",label="Target")
+    ax.plot(c.coord_target(indD,transcription)[:,[0]],c.coord_target(indD,transcription)[:,[1]],"r--",label="Target")
    
     ax.set_xlim(-limit, limit)
     ax.set_ylim(-limit, limit)
@@ -80,7 +82,7 @@ def out(xyz,indS,indU,indD):
     
 
 #Affiche le cocleogram d'entrée, et la sortie
-def affiche(xyz,indS,indU,indD,data,states = [],erreur = [],mode = None,**kwargs):
+def affiche(xyz,indS,indU,indD,data,transcription,states = [],erreur = [],mode = None,**kwargs):
     
     
     end_sensor_epoch = len(c.cocleogram(indS,indU,indD,data)[0])
@@ -92,7 +94,7 @@ def affiche(xyz,indS,indU,indD,data,states = [],erreur = [],mode = None,**kwargs
     
     #Affichage du cocleogram
     ax_cocleo = fig.add_subplot(gs[0,0])
-    cocleo = c.entrance_cocleogram(indS, indU, indD,data)
+    cocleo = c.entrance_cocleogram(indS, indU, indD,data,transcription)
     ax_cocleo.pcolormesh(cocleo,cmap="jet")
     ax_cocleo.set_title("Cocleogram du sujet : {}, entrée : {},chiffre : {}".format(indS,indU,indD))
     ax_cocleo.set_xlabel("Timestep")
@@ -101,7 +103,7 @@ def affiche(xyz,indS,indU,indD,data,states = [],erreur = [],mode = None,**kwargs
     #Affichage de la sortie
     ax_out = fig.add_subplot(gs[0, 1])
     max1 = np.max(np.abs(xyz[:,[0,1]]))
-    max2 = np.max(np.abs(c.coord_target(indD)))
+    max2 = np.max(np.abs(c.coord_target(indD,transcription)))
     
     limit = max(max1,max2) + 0.1
     
@@ -114,7 +116,7 @@ def affiche(xyz,indS,indU,indD,data,states = [],erreur = [],mode = None,**kwargs
         ax_out.plot([xyz[i,0],xyz[i+1,0]],[xyz[i,1],xyz[i+1,1]],color)
             
     
-    ax_out.plot(c.coord_target(indD)[:,[0]],c.coord_target(indD)[:,[1]],"r--",label="Target")
+    ax_out.plot(c.coord_target(indD,transcription)[:,[0]],c.coord_target(indD,transcription)[:,[1]],"r--",label="Target")
    
     ax_out.set_xlim(-limit, limit)
     ax_out.set_ylim(-limit, limit)
@@ -165,7 +167,7 @@ def affiche(xyz,indS,indU,indD,data,states = [],erreur = [],mode = None,**kwargs
     
     
 #Fonctions qui affiche tout les chiffes pour une entrée et un sujet donné.
-def affiche_chiffre(liste_chiffre,indS,indU,data,list_error = [], mode = None,**kwargs):
+def affiche_chiffre(liste_chiffre,indS,indU,data,transcription,list_error = [], mode = None,**kwargs):
     
     fig,ax = plt.subplots(4,3,figsize=(16,10))
     fig.suptitle("Prédictions du sujet : {}, entrée : {} et de tout les chiffres avec une méthode {}".format(indS,indU,mode))
@@ -178,7 +180,7 @@ def affiche_chiffre(liste_chiffre,indS,indU,data,list_error = [], mode = None,**
             ax[row,col] = fig.add_subplot(ax[row,col])
             #Affichage de la sortie
             max1 = np.max(np.abs(liste_chiffre[indD][:,[0,1]]))
-            max2 = np.max(np.abs(c.coord_target(indD)))
+            max2 = np.max(np.abs(c.coord_target(indD,transcription)))
     
             limit = max(max1,max2) + 0.1
     
@@ -192,7 +194,7 @@ def affiche_chiffre(liste_chiffre,indS,indU,data,list_error = [], mode = None,**
             
             
     
-            ax[row,col].plot(c.coord_target(indD)[:,[0]],c.coord_target(indD)[:,[1]],"r--",label="Target")
+            ax[row,col].plot(c.coord_target(indD,transcription)[:,[0]],c.coord_target(indD,transcription)[:,[1]],"r--",label="Target")
    
             ax[row,col].set_xlim(-limit, limit)
             ax[row,col].set_ylim(-limit, limit)

@@ -98,18 +98,18 @@ def target_xyz(indS,indU,indD,data,transcription,innate = False,T_ent =1/(6*10**
     return np.concatenate((x,y,z), axis = 1)
 
     
-def etat(reservoir,indS,indU,indD,data,units_nb=20):
+def etat(reservoir,indS,indU,indD,data,transcription,units_nb=20):
     
-    X = np.transpose(entrance_cocleogram(indS, indU, indD,data))
+    X = np.transpose(entrance_cocleogram(indS, indU, indD,data,transcription))
     
     states = reservoir.run(X)
     
     return states[:,:units_nb]
 
-def error(xyz,indS,indU,indD,data):
+def error(xyz,indS,indU,indD,data,transcription):
     
     #On utilise la distance euclidienne
-    target = target_xyz(indS, indU, indD, data)
+    target = target_xyz(indS, indU, indD, data,transcription)
     
     taille = len(xyz)
     
@@ -229,7 +229,7 @@ def ind_median_entrance(data,sujet=[1]):
             
 
 #Fonction qui retourne le cocleogram de taille moyenne pour chaque chiffre et parmit les sujets choisis dans l'ordre de 0 à 9
-def median_cocleogram(data,sujet=[1]):
+def median_cocleogram(data,transcription,sujet=[1]):
     
     indice_median_entrance = ind_median_entrance(data,sujet)
     rows,cols = np.shape(indice_median_entrance)
@@ -239,17 +239,17 @@ def median_cocleogram(data,sujet=[1]):
         indS = int(indice_median_entrance[i][0])
         indU = int(indice_median_entrance[i][1])
         indD = int(indice_median_entrance[i][2])
-        median_entrance_cocleogram.append(np.transpose(entrance_cocleogram(indS,indU,indD,data)))
+        median_entrance_cocleogram.append(np.transpose(entrance_cocleogram(indS,indU,indD,data,transcription)))
     
     return median_entrance_cocleogram
 
 
 
 #Déformation linéaire de l'innate trajectory
-def linear_warping(indS,indU,indD,data,innate_trajectory):
+def linear_warping(indS,indU,indD,data,transcription,innate_trajectory):
     
     #Récupération du cocleogram
-    cocleo = entrance_cocleogram(indS,indU,indD,data)
+    cocleo = entrance_cocleogram(indS,indU,indD,data,transcription)
     
     #Récupération du Timestep du cocleogram pour que l'innate trajectory y soit adaptée
     T = np.shape(cocleo)[1]
