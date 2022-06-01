@@ -31,7 +31,7 @@ def affiche_one_chiffre(n):
     
     
 #Fonction qui affiche un cocleogram 
-def affiche_cocleo(indS,indU,indD,data,transcription,formatage = True):
+def affiche_cocleo(indS,indU,indD,data,transcription,biais = 0,formatage = True):
     
     fig_cocleo,ax_cocleo = plt.subplots(figsize =(10,10)) 
     
@@ -39,7 +39,7 @@ def affiche_cocleo(indS,indU,indD,data,transcription,formatage = True):
     T = 1/freq
     
     if formatage == True:
-        cocleo = c.entrance_cocleogram(indS, indU, indD,data,transcription)      
+        cocleo = c.entrance_cocleogram(indS, indU, indD,data,transcription,biais)      
     else :
         cocleo = c.cocleogram(indS,indU,indD,data)
    
@@ -82,7 +82,7 @@ def out(xyz,indS,indU,indD,transcription):
     
 
 #Affiche le cocleogram d'entrée, et la sortie
-def affiche(xyz,indS,indU,indD,data,transcription,states = [],erreur = [],mode = None,**kwargs):
+def affiche(xyz,indS,indU,indD,data,transcription,biais = 0,states = [],erreur = [],mode = None,**kwargs):
     
     
     end_sensor_epoch = len(c.cocleogram(indS,indU,indD,data)[0])
@@ -94,7 +94,7 @@ def affiche(xyz,indS,indU,indD,data,transcription,states = [],erreur = [],mode =
     
     #Affichage du cocleogram
     ax_cocleo = fig.add_subplot(gs[0,0])
-    cocleo = c.entrance_cocleogram(indS, indU, indD,data,transcription)
+    cocleo = c.entrance_cocleogram(indS, indU, indD,data,transcription,biais)
     ax_cocleo.pcolormesh(cocleo,cmap="jet")
     ax_cocleo.set_title("Cocleogram du sujet : {}, entrée : {},chiffre : {}".format(indS,indU,indD))
     ax_cocleo.set_xlabel("Timestep")

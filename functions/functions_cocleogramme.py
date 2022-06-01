@@ -163,7 +163,7 @@ def ind_max_entrance(indD,data,sujet=[1,2,3,4,5]):
     return S,U,D
 
 #Fonction qui retourne les cocléogrammes d'entrées
-def entrance_cocleogram(indS,indU,indD,data,transcription):
+def entrance_cocleogram(indS,indU,indD,data,transcription,biais = 0):
 
     #définition des périodes d'entrées et de sorties
     T_ent =1/(6*10**3)
@@ -190,7 +190,7 @@ def entrance_cocleogram(indS,indU,indD,data,transcription):
     #Ensuite, en fonction du chiffre qu'on cherche à afficher on rajoute une durée
     #Qui correspond au temps que met le reservoir à tracer le chiffre
     y = len(coord_target(indD,transcription))
-    return np.concatenate((cocleo,np.zeros([12,int(y)])),axis=1)        
+    return np.concatenate((cocleo,np.zeros([12,int(y)])),axis=1) + biais        
                 
                 
 #Fonction qui recherche l'indice du cocleogram avec la taille moyenne pour chaque chiffre
