@@ -17,6 +17,7 @@ from tqdm import tqdm
 
 from reservoirpy.nodes import Reservoir
 
+from functions_data import *
 
     
 #return une liste [x,y] avec les coordonées du chiffre n
@@ -181,16 +182,16 @@ def entrance_cocleogram(indS,indU,indD,data,transcription,biais = 0):
 
     
     #On rajoute le nombre de 0 équivalent à la différence avant la période de transition
-    cocleo = np.concatenate((cocleo,np.zeros([12,int(diff)])),axis=1)
+    cocleo = np.concatenate((cocleo,np.zeros((12,int(diff)))),axis=1)
     
     #Dans l'article il y a un temps de l'attence qui est ajouté de 300ms
-    betw_epoch = (300*10**(-3))/T_out
-    cocleo = np.concatenate((cocleo,np.zeros([12,int(betw_epoch)])),axis=1)
+    betw_epoch = (300e-3)/T_out
+    cocleo = np.concatenate((cocleo,np.zeros((12,int(betw_epoch)))),axis=1)
     
     #Ensuite, en fonction du chiffre qu'on cherche à afficher on rajoute une durée
     #Qui correspond au temps que met le reservoir à tracer le chiffre
     y = len(coord_target(indD,transcription))
-    return np.concatenate((cocleo,np.zeros([12,int(y)])),axis=1) + biais        
+    return np.concatenate((cocleo,np.zeros((12,int(y)))),axis=1) + biais        
                 
                 
 #Fonction qui recherche l'indice du cocleogram avec la taille moyenne pour chaque chiffre
