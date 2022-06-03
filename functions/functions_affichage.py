@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy.linalg import eig
 
+from random import randint
+
 
 #Fonction qui affiche les chiffres d'arrivée 
 def affiche_one_chiffre(n): 
@@ -82,7 +84,7 @@ def out(xyz,indS,indU,indD,transcription):
     
 
 #Affiche le cocleogram d'entrée, et la sortie
-def affiche(xyz,indS,indU,indD,data,transcription,biais = 0,states = [],erreur = [],mode = None,**kwargs):
+def affiche(xyz,indS,indU,indD,data,transcription,biais = 0,states = [],erreur = [],mode = None,filename = False,**kwargs):
     
     
     end_sensor_epoch = len(c.cocleogram(indS,indU,indD,data)[0])
@@ -138,7 +140,6 @@ def affiche(xyz,indS,indU,indD,data,transcription,biais = 0,states = [],erreur =
     #Affiche de l'erreur commise (simple distance euclidienne)
     
     if len(erreur) != 0:
-        print(1)
         max_error = np.max(erreur)
         ax_error = fig.add_subplot(gs[0,2])
         ax_error.plot(erreur)
@@ -162,12 +163,15 @@ def affiche(xyz,indS,indU,indD,data,transcription,biais = 0,states = [],erreur =
     ax_donnees.set_ylim(0, limit)
     ax_donnees.set_axis_off()   
     
-
-    fig.show
+    if filename != False:
+        plt.close(fig)
+        fig.savefig(filename+"/affichage d'un seul chiffre.png")
+    else:
+        fig.show()
     
     
 #Fonctions qui affiche tout les chiffes pour une entrée et un sujet donné.
-def affiche_chiffre(liste_chiffre,indS,indU,data,transcription,list_error = [], mode = None,**kwargs):
+def affiche_chiffre(liste_chiffre,indS,indU,data,transcription,list_error = [], mode = None,filename = False,**kwargs):
     
     fig,ax = plt.subplots(4,3,figsize=(16,10))
     fig.suptitle("Prédictions du sujet : {}, entrée : {} et de tout les chiffres avec une méthode {}".format(indS,indU,mode))
@@ -222,14 +226,15 @@ def affiche_chiffre(liste_chiffre,indS,indU,data,transcription,list_error = [], 
     ax[3,2].set_ylim(0, limit)
     ax[3,2].set_axis_off()
     
-    fig.show()
+    if filename != False:
+        plt.close(fig)
+        fig.savefig(filename+"/affichage de tout les chiffres.png")
+    else:
+        fig.show()
     
     
 #graphe de toutes les valeurs propres    
-def eigein_value(W1,W2 = [],*args):
-    
-    if args == ():
-        args += ("W1","W2")
+def eigein_value(W1,name1,W2 = [],name2="",filename = False):
     
     #récupération des valeurs propres
     eigeinvalue_W1, _ = eig(W1)
@@ -242,14 +247,14 @@ def eigein_value(W1,W2 = [],*args):
     fig.suptitle("Affichage des valeurs propres")
 
     
-    #Affichage du cocleogram
+    #Affichage du graphique
     X1,Y1 = [],[]
     for i in range(len(eigeinvalue_W1)):
         X1.append(eigeinvalue_W1[i].real)
         Y1.append(eigeinvalue_W1[i].imag)
                 
         
-    ax_eigeinvalue.scatter(X1,Y1,c = 'r',label=args[0] + " et rs = " +str(rs_W1))
+    ax_eigeinvalue.scatter(X1,Y1,c = 'r',label=name1 + " et rs = " +str(rs_W1))
     
     if W2 != []:
         eigeinvalue_W2, _ = eig(W2)
@@ -260,15 +265,38 @@ def eigein_value(W1,W2 = [],*args):
             X2.append(eigeinvalue_W2[i].real)
             Y2.append(eigeinvalue_W2[i].imag)
 
-        ax_eigeinvalue.scatter(X2,Y2,c = 'k',label=args[1] + " et rs = " +str(rs_W2))
+        ax_eigeinvalue.scatter(X2,Y2,c = 'k',label=name2 + " et rs = " +str(rs_W2))
     
     ax_eigeinvalue.set_xlabel("Partie réelle")
     ax_eigeinvalue.set_ylabel("Partie imaginaire")
     ax_eigeinvalue.grid()
     ax_eigeinvalue.legend()
     
-    fig.show()
+    if filename != False:
+        plt.close(fig)
+        fig.savefig(filename+"/affichage des valeurs propres.png")
+    else:
+        fig.show()
     
+def pre_post_affichage(N,pre_training,pre_training_target,post_training,filename = False):
+    
+    fig,ax = plt.subplots(figsize=(17,10),nrows = 3,ncols=2)
+    
+    for i in range(3):
+        neuron = randint(1,N-1)
+        ax[i,0].plot(pre_training[:,neuron],"b",label = "etat pre-training du neurone " + str(neuron))
+        ax[i,0].plot(pre_training_target[:,neuron],'--r',label = "innate trajectories")
+        ax[i,0].legend()
+        
+        ax[i,1].plot(post_training[:,neuron],"b",label = "etat après training du neurone " + str(neuron))
+        ax[i,1].plot(pre_training_target[:,neuron],'--r',label = "innate trajectories")
+        ax[i,1].legend()
+        
+    if filename != False:
+        plt.close(fig)
+        fig.savefig(filename+"/affichage des états avant et après training.png")
+    else:
+        fig.show()
 
 
 """
@@ -312,3 +340,4 @@ def fig(data):
     ax_out.set_title("Variation des différentes coordonées")
     ax_out.set_xlabel("Timesteps")
 """
+

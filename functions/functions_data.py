@@ -8,16 +8,10 @@ Created on Mon May 30 19:53:20 2022
 
 import mat73
 
-import numpy as np
-
 import os
 
 import pickle
 
-my_dict = { 'Apple': 4, 'Banana': 2, 'Orange': 6, 'Grapes': 11}
-
-with open("myDictionary.pkl", "wb") as tf:
-    pickle.dump(my_dict,tf)
 
 
 #Extraction des données d'arrivée
@@ -40,7 +34,8 @@ def extract_data():
     
     return data
 
-def save_seed(entrance_matrice,trained_matrice,**kwargs):
+def save_seed(entrance_matrice,trained_matrice,chemin ="experience",**kwargs):
+    
     
     seed = {"init":{},'train':{},'params':{}}
     
@@ -57,39 +52,63 @@ def save_seed(entrance_matrice,trained_matrice,**kwargs):
     for cle,value in kwargs.items():
         seed['params'][cle] = value
            
-    dirPath = r"experience"
-    fichier = next(os.walk(dirPath))[2]
+    #Récupération du numéro de la seed
+    try :
+            fichier = open(chemin + "/number_seed","r") ; fichier.close()
+    except :
+            crea_text_number_seed(chemin)
+            
     
-    if len(fichier) == 0:
-        number = [0]
-    else :
-    
-        number = []
-    
-        for i in fichier:
-            i = i[4:]
-            i = i[:-4]
+    with open(chemin+"/number_seed","r") as fich:
+        all_seed = fich.readlines()
         
-            number.append(int(i))
-        
-    number_seed = max(number) + 1
+        if len(all_seed) == 0:
+            all_seed.append(1)
+            number_seed = 1
+        else:
+            for i in range(len(all_seed)):
+                print(type(all_seed[i]))
+                all_seed[i] = int(all_seed[i])
+                
+            number_seed = max(all_seed)+1
+            all_seed.append(max(all_seed)+1)
+            
+        for i in range(len(all_seed)):
+            all_seed[i] = str(all_seed[i]) +"\n"
+            
+    #Réecriture du fichier 
+    with open(chemin + "/number_seed","w") as fich:
+        fich.writelines(all_seed)
     
-    name = 'experience/seed'+str(number_seed)+".pkl"
+    #création d'un fichier vide
+    if not os.path.exists(chemin+'/seed'+str(number_seed)):
+        os.makedirs(chemin + '/seed'+str(number_seed))
     
+    #Création du fichier seed et importation dedans 
+    name = chemin + '/seed'+str(number_seed)+'/seed'+str(number_seed)+".pkl"
     with open(name, "wb") as tf:
         pickle.dump(seed,tf)
+        
+    #Création d'un fichier texte avec les paramètres dedans:
+    with open(chemin+'/seed'+str(number_seed)+'/params.txt',"w") as fich:
+        for cle,value in kwargs.items():
+            fich.write(str(cle)+" = "+str(value)+"\n")
 
-    return name   
+    print("Fichier sauvegardé")
+    
+    #return le nom ainsi que le nom du fichier
+    return name,chemin+'/seed'+str(number_seed)   
     
     
-def load_dict(file_name):
+def load_seed(file_name):
     with open(file_name, "rb") as tf:
         seed = pickle.load(tf)
 
     return seed
 
     
-
-
+def crea_text_number_seed(chemin):
+    with open(chemin+"/number_seed","w") as fich:
+        None
 
     
