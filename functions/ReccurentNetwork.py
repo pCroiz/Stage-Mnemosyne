@@ -59,12 +59,17 @@ class RecurrentNetwork(object):
         self.z = np.zeros((self.No, 1), dtype=self.dtype)
 
         # Weights between the input and recurrent units
-        #self.W_in = np.random.randn(self.N, self.Ni).astype(self.dtype)
-        self.W_in = self.W_in.astype(self.dtype)
+        if len(self.W_in) != 0:
+            self.W_in = self.W_in.astype(self.dtype)
+        else :
+            self.W_in = np.random.randn(self.N, self.Ni).astype(self.dtype)
 
         # Weights between the recurrent units
-        #self.W_rec = (np.random.randn(self.N, self.N) * self.g/np.sqrt(self.pc*self.N)).astype(self.dtype)
-        self.W_rec = self.W_rec.astype(self.dtype)
+        if len(self.W_rec) != 0:
+            self.W_rec = self.W_rec.astype(self.dtype)
+        else : 
+            self.W_rec = (np.random.randn(self.N, self.N) * self.g/np.sqrt(self.pc*self.N)).astype(self.dtype)
+            
         # The connection pattern is sparse with p=0.1
         connectivity_mask = np.random.binomial(1, self.pc, (self.N, self.N))
         connectivity_mask[np.diag_indices(self.N)] = 0
@@ -77,8 +82,11 @@ class RecurrentNetwork(object):
         self.P = [1./self.delta*np.identity(len(self.W_plastic[i])).astype(self.dtype) for i in range(self.N_plastic)]
 
         # Output weights
-        #self.W_out = (np.random.randn(self.No, self.N) / np.sqrt(self.N)).astype(self.dtype)
-        self.W_out = self.W_out.astype(self.dtype)
+        
+        if len(self.W_rec) != 0:
+            self.W_out = self.W_out.astype(self.dtype)
+        else:
+            self.W_out = (np.random.randn(self.No, self.N) / np.sqrt(self.N)).astype(self.dtype)
         
         # Inverse correlation matrix of inputs for learning readout weights
         self.P_out = [1./self.delta*np.identity(self.N).astype(self.dtype) for i in range(self.No)]
