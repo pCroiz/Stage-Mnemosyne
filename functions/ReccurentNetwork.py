@@ -83,7 +83,7 @@ class RecurrentNetwork(object):
         # Inverse correlation matrix of inputs for learning readout weights
         self.P_out = [1./self.delta*np.identity(self.N).astype(self.dtype) for i in range(self.No)]
 
-    def simulate(self, stimulus, noise=True, trajectory=np.array([]), learn_start=-1, learn_stop=-1, learn_readout=False, verbose=True):
+    def simulate(self, stimulus, noise=True, trajectory=np.array([]), learn_start=-1, learn_stop=-1, learn_readout=False, verbose=True,value_loss = False):
         """
         Simulates the recurrent network for the given duration, with or without plasticity.
         * `stimulus`: np.array for the inputs. Determines the duration.
@@ -93,6 +93,7 @@ class RecurrentNetwork(object):
         * `learn_stop`: time when learning should stop.
         * `learn_readout`: defines whether the recurrent (False) or readout (True) weights should be learned.
         * `verbose`: defines if the loss should be printed (default: True)
+        * 'value_loss' : definis if the loss should be return (default: False)
         """
 
         # Get the stimulus shape to know the duration
@@ -133,8 +134,13 @@ class RecurrentNetwork(object):
         # Print the loss at the end of the trial
         if trajectory.size > 0 and verbose:
             print('\Loss:',self.loss/(learn_stop-learn_start)*2 )
+        
+        if trajectory.size > 0 and verbose and value_loss:
+            return record_r, record_z, self.loss/(learn_stop-learn_start)*2
 
         return record_r, record_z
+    
+
 
     def update_neurons(self, stimulus, noise):
         """
@@ -217,6 +223,13 @@ class RecurrentNetwork(object):
             P = self.P,
             P_out = self.P_out
         )
+    
+    def save_matrix(self,filename):
+        
+        np.savez(
+            filename,
+            W_rec = self.W_rec,
+            W_out = self.W_out)
 
     def load(self, filename):
         """
