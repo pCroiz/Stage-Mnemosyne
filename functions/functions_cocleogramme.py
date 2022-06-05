@@ -149,7 +149,7 @@ def W_in(N,M):
     return np.transpose(Win)
 
 #Fonction qui recherche l'entrée la plus longue
-def ind_max_entrance(indD,data,sujet=[1,2,3,4,5]):
+def ind_max_entrance(indD,data,sujet=[1]):
     taille = 0
     S,U,D = 0,0,indD
 
