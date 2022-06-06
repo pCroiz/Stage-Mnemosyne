@@ -1,0 +1,7 @@
+N = 21
+sr = 1.6
+biais = 0.2
+I0 = 0.05
+nb_learning_trials_rec = 200
+nb_learning_trials_readout = 351
+code = Vitay
