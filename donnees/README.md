@@ -1,3 +1,3 @@
-L'extraction direct des données du fichier MatLab n'a pas pu se faire.
+Les fichiers données dans l'article sont les fichiers *data* et *target*, le fichier *Input* est un sous fichier de *data* et c'est notamment celui la qui me sert dans le code MatLab. 
 
-J'ai donc crée un code MatLab qui désassemble le fichier data en plusieurs fichiers sujets.
+Le code *data extract* permet d'extraire les données du fichier *Input* et qui regroupe les cocléogrammes par sujet. Ensuite c'est une fonction python qui va récupérer les différents fichier *sujet*
