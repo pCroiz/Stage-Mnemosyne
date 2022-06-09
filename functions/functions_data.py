@@ -67,7 +67,6 @@ def save_seed(entrance_matrice,trained_matrice,chemin ="experience",**kwargs):
             number_seed = 1
         else:
             for i in range(len(all_seed)):
-                print(type(all_seed[i]))
                 all_seed[i] = int(all_seed[i])
                 
             number_seed = max(all_seed)+1

@@ -165,7 +165,9 @@ def affiche(xyz,indS,indU,indD,data,transcription,biais = 0,states = [],erreur =
     
     if filename != False:
         plt.close(fig)
-        fig.savefig(filename+"/affichage d'un seul chiffre.png")
+        nom = filename+"/affichage d'un seul chiffre avec indS = " +str(indS)+", indU = " + str(indU) + ", indD = " + str(indD) + ".png"
+
+        fig.savefig(nom)
     else:
         fig.show()
     
@@ -228,7 +230,9 @@ def affiche_chiffre(liste_chiffre,indS,indU,data,transcription,list_error = [], 
     
     if filename != False:
         plt.close(fig)
-        fig.savefig(filename+"/affichage de tout les chiffres.png")
+        nom = filename+"/affichage de tout les chiffres avec indS = " +str(indS)+", indU = " + str(indU)  + ".png"
+        fig.savefig(nom)
+        fig.savefig(nom)
     else:
         fig.show()
     
