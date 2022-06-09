@@ -1,9 +1,0 @@
-N = 1050
-sr = 1.6
-biais = 0.2
-I0 = 0.05
-nb_learning_trials_rec = 161
-nb_learning_trials_readout = 0
-code = Vitay
-meanerror = 0.21633316056218294
-matrice_utilise = Vitay
