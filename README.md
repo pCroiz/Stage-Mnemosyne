@@ -10,6 +10,8 @@
   - Dans Donnees vous trouverez les données initiales de l'article ainsi que le code MatLab pour extraire les données.
   - Dans Seed vous trouverez pleins de fichiers "seed + numéro", ils contiennent différentes seed.
 
+Si vous voulez télécharger le code, il faut juste faire attention aux différents chemins entre les appelles des différentes fonctions.
+
 ## Référence
  
 [1] Dean V Buonomano, Vishwa Goudar, Encoding sensory and motor patterns as time-invariant trajectories in recurrent neural networks, *https://elifesciences.org/articles/31134*, article, 2018
