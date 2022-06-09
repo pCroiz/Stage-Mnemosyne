@@ -1,0 +1,8 @@
+methode = Géneration de seed avec un ESN méthode online
+N = 210
+sr = 1.8
+biais = 0
+I0 = 0.0005
+nb_learning_trials_rec = 0
+nb_learning_trials_readout = 250
+entrainement = indU de 1 à 5

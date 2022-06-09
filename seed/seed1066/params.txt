@@ -1,0 +1,8 @@
+N = 21
+sr = 1.6
+biais = 0.2
+I0 = 0.05
+nb_learning_trials_rec = 100
+nb_learning_trials_readout = 250
+code = Vitay
+entrainement = L'entrainement a été effectué sur le sujet 1 et parmis les entrées 1 à 5

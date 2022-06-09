@@ -1,0 +1,9 @@
+N = 21
+sr = 1.6
+biais = 0.2
+I0 = 0.05
+nb_learning_trials_rec = 51
+nb_learning_trials_readout = 0
+code = Vitay
+meanerror = 0.00658559905610467
+entraînement = Entraînement de la matrice W
