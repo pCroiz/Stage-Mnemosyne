@@ -1,0 +1,5 @@
+numpy==1.21.6
+reservoirpy==0.3.5
+matplotlib==3.5.2
+mat73==0.59
+jupyter
